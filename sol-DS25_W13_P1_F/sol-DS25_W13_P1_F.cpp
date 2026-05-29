@@ -34,9 +34,8 @@ private:
 		for (Vertex* v : vertices_list)if (v->vid == vid)return v;
 		return nullptr;
 	}
-	Edge* find_edge(int eid) {
-		for (Edge* e : edges_list)if (e->eid == eid)return e;
-		return nullptr;
+	Edge* find_edge(Vertex* u,Vertex* v) {
+		return matrix[u->matrix_idx][v->matrix_idx];
 	}
 
 	bool is_adjacent_to(Vertex* u, Vertex* v) {
@@ -61,6 +60,7 @@ private:
 		int src_idx = e->src->matrix_idx;
 		int dst_idx = e->dst->matrix_idx;
 		matrix[src_idx][dst_idx] = matrix[dst_idx][src_idx] = nullptr;
+		edges_list.erase(e->edges_list_pos);
 		delete e;
 	}
 public:
@@ -81,7 +81,6 @@ public:
 		Vertex* dst = find_vertex(vid2);
 		if (src == nullptr && dst == nullptr) { cout << vid1 << ' ' << vid2 << " Vertex Not Exist\n"; return; }
 		if (src == nullptr || dst == nullptr) { cout << (src == nullptr ? vid1 : vid2) << " Vertex Not Exist\n"; return; }
-		if (find_edge(eid) != nullptr) { cout << "Edge Exist\n"; return; }
 		if(is_adjacent_to(vid1,vid2)){cout<<"Edge Exist\n";return; }
 		Edge* newEdge = new Edge(eid, src, dst);
 		edges_list.push_back(newEdge);
@@ -112,9 +111,7 @@ public:
 		if (src == nullptr && dst == nullptr) { cout << vid1 << ' ' << vid2 << " Vertex Not Exist\n"; return; }
 		if (src == nullptr || dst == nullptr) {	cout << (src == nullptr ? vid1 : vid2) << " Vertex Not Exist\n"; return; }
 		if (!is_adjacent_to(vid1, vid2)) { cout << -1 << '\n'; return; }
-		Edge* delEdge = matrix[src->matrix_idx][dst->matrix_idx];
-		erase_edge(delEdge);
-		insertEdge(vid1, vid2, eid);
+		find_edge(src, dst)->eid = eid;
 	}
 	void sumEdgeWeight(int vid) {
 		Vertex* v = find_vertex(vid);
